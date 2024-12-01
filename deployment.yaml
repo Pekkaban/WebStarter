@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: django-app
+  template:
+    metadata:
+      annotations:
+         prometheus.io/scrape: "true"
+         prometheus.io/path: "/metrics"
+         prometheus.io/port: "8000" 
+      labels:
+        app: django-app
+    spec:
+      containers:
+      - name: django-app
+        image: zhako/my-django-app:latest
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: sqlite-storage
+          mountPath: /app/db.sqlite3
+      volumes:
+      - name: sqlite-storage
+        emptyDir: {}
+
